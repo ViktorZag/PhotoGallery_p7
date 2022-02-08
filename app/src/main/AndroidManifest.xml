@@ -24,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".webView.PhotoPageActivity"/>
         <receiver android:name=".utils.NotificationReceiver"
             android:permission="com.viktor_zet.photogallery_p7.PRIVATE"
             android:exported="false">
