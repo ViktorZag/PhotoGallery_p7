@@ -1,5 +1,6 @@
 package com.viktor_zet.photogallery_p7.utils
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -16,8 +17,8 @@ import com.viktor_zet.photogallery_p7.model.GalleryItem
 
 private const val TAG = "PollWorker"
 
-class PollWorker(val context: Context, workerParams: WorkerParameters)
-: Worker(context, workerParams)  {
+class PollWorker(val context: Context, workerParams: WorkerParameters) :
+    Worker(context, workerParams) {
 
     override fun doWork(): Result {
         val query = QueryPreferences.getStoredQuery(context)
@@ -56,17 +57,26 @@ class PollWorker(val context: Context, workerParams: WorkerParameters)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build()
-            val notificationManager = NotificationManagerCompat.from(context)
-            notificationManager.notify(0, notification)
-
-            context.sendBroadcast(Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE)
+            showBackgroundNotification(0, notification)
         }
-
         return Result.success()
     }
+
+    private fun showBackgroundNotification(
+        requestCode: Int,
+        notification: Notification
+    ) {
+        val intent = Intent(ACTION_SHOW_NOTIFICATION).apply {
+            putExtra(REQUEST_CODE, requestCode)
+            putExtra(NOTIFICATION, notification)
+        }
+        context.sendOrderedBroadcast(intent, PERM_PRIVATE)
+    }
+
     companion object {
-        const val ACTION_SHOW_NOTIFICATION =
-            "com.viktor_zet.photogallery_p7.SHOW_NOTIFICATION"
+        const val ACTION_SHOW_NOTIFICATION = "com.viktor_zet.photogallery_p7.SHOW_NOTIFICATION"
         const val PERM_PRIVATE = "com.viktor_zet.photogallery_p7.PRIVATE"
+        const val REQUEST_CODE = "REQUEST_CODE"
+        const val NOTIFICATION = "NOTIFICATION"
     }
 }
